@@ -10,6 +10,23 @@ FinTrack is a full-stack MERN application for recording personal income and expe
 - Sign in to receive a JSON Web Token (JWT). The browser sends it with protected requests.
 - Sign out to clear the local session token.
 - Passwords are hashed with bcrypt before storage; they are never saved as plain text.
+- Select **Forgot your password?** on the sign-in view to receive a short-lived password-reset link by email.
+
+### Password reset by Gmail
+
+The reset flow is deliberately designed to avoid exposing account emails. FinTrack responds with the same confirmation message whether or not an account exists, generates a cryptographically random token, stores only its SHA-256 hash, and invalidates it after 15 minutes or successful use. The email link opens a view where the user can choose a new password.
+
+To enable email sending in development or production, configure Gmail SMTP in `server/.env`:
+
+```env
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-gmail-address@gmail.com
+SMTP_PASS=your-16-character-google-app-password
+MAIL_FROM=FinTrack <your-gmail-address@gmail.com>
+```
+
+Google requires two-step verification and a [Google App Password](https://myaccount.google.com/apppasswords) for `SMTP_PASS`; do not use the normal Gmail account password. Keep this file private. If SMTP is not configured, the API rejects reset requests with a clear configuration error rather than silently claiming an email was sent.
 
 ### Transactions
 
